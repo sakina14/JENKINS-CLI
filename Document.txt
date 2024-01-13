@@ -1,0 +1,53 @@
+Q:How to use jenkins cli and how can we run/build our jenkins job using jenkins cli?
+
+Before starting jenkins cli  launch an instance in EC2 with port:8080
+Then connect with putty
+In that server we should install java,apache tomcat and jenkins and create a new folder to run jenkins job
+Take the server ipaddress and paste in browser:https//ipaddress:8080/jenkins
+login to jenkins with username and password
+
+Now coming to jenkins cli:
+go to jenkins:click on manage jenkins ->click on jenkins cli
+There you can see jenkins-cli.jar copy that link
+And paste in local server :wget jenkins-cli.jar
+Then start the jenkins job to build in local server
+[root....jenkins]#https:java -jar jenkins-cli.jar -s http://192-168.16:8080/jenkins -http build job(remove job and give your job name)
+ It throws an error 
+ofcourse it will fail becoz our jenkins required the permissions so right we are logged with credentials
+
+If you want to execute your job without credentials:
+Then go to jenkins:manage jenkins->security->authorization select Any one can do anything option ->save
+Come back to our local server
+[root..jenkins]#java -jar jenkins-cli.jar -s http://192-168.16:8080/jenkins -http build job(remove job and give your job name)
+now this time sucessfull but doesn't show the result
+To see the o/p of your build on terminal itself then add -f 
+[root..jenkins]java -jar jenkins-cli.jar -s http://192-168.16:8080/jenkins -http build job(remove job and give your job name) -f
+started BUild #1
+compeleted Build#1:sucess
+same build o/p you can see in jenkins as well
+
+to see more verbose o/p(logs) you can use -v -f
+[root...jenkins]#java -jar jenkins-cli.jar -s http://192-168.16:8080/jenkins -http build job(remove job and give your job name) -v -f
+you can see the console o/p on terminal
+so there are many commands not only build you do many things
+
+now we will see with credentials:
+Go to jenkins:manage jenkins->security->authorization logged-in users can do anything and enable anomynous read acess->save
+come back to our local server 
+[root .... jenkins>]#java -jar jenkins-cli.jar -s http://192-168.16:8080/jenkins -http build job(remove job and give your job name)
+error:anomynous /build permission
+
+Go to jenkins click on admin->configure
+add token:generate the token and copy that token 
+
+in local server
+[root ... jenkins]#vi .clitoken
+admin:paste token password
+:wq!
+[root ... jenkins]#pwd
+copy the path
+[root ... jenkins]# java -jar jenkins-cli.jar -s http://192-168.16:8080/jenkins/ -http -auth @/opt/jenkins/.clitoken who-am-i
+authenticated as :admin
+authorities:
+  authenticated
+
